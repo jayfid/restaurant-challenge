@@ -1,0 +1,25 @@
+{
+  "name": "code_challenge",
+  "version": "1.0.0",
+  "description": "A code challenge for The Orchard",
+  "main": "index.js",
+  "scripts": {
+    "load": "node etl/loader.js",
+    "start": "node server/index.js"
+  },
+  "author": "Jay Fidlow",
+  "license": "ISC",
+  "devDependencies": {
+    "eslint": "^4.19.1",
+    "eslint-config-airbnb-base": "^13.0.0",
+    "eslint-plugin-import": "^2.13.0",
+    "http-server": "^0.11.1"
+  },
+  "dependencies": {
+    "body-parser": "^1.18.3",
+    "csv-parser": "^1.12.1",
+    "dotenv": "^6.0.0",
+    "express": "^4.16.3",
+    "mongodb": "^3.1.1"
+  }
+}
