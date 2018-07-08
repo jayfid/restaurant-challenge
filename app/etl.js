@@ -1,6 +1,7 @@
 /**
  * Load data from NYC restaurant CSV (https://data.cityofnewyork.us/api/views/43nn-pn8j/rows.csv?accessType=DOWNLOAD)
- * Prevent duplicates from being inserted
+ * Prevent duplicates from being inserted.  Inspection information can
+ * be added later by correlating camis values.
  */
 
 const csv = require('csv-parser');
@@ -28,23 +29,28 @@ class CSVLoader {
             .pipe(csv())
             .on('data', (data) => {
                 // as we stream data in, each row is a candidate for insert
-                const res = {
+                const record = {
                     camis: data.CAMIS,
                     name: data.DBA,
                     address: `${data.BUILDING} ${data.STREET}`,
+                    boro: data.BORO,
                     postal_code: data.ZIPCODE,
                     phone: data.PHONE,
+                    score: data.score,
                     type: data['CUISINE DESCRIPTION'].toLowerCase(),
                     grade: data.GRADE ? config.get('grade')[data.GRADE] : 20,
-                    date: new Date(data['GRADE DATE']),
+                    grade_date: new Date(data['GRADE DATE']),
+                    record_date: new Date(data['RECORD DATE']),
                 };
                 // if we've already seen a CAMIS, update it if the grade date is more recent.
-                if (res.camis in items) {
-                    if (res.date > items[res.camis]) {
-                        items[res.camis] = res.date;
+                if (record.camis in items) {
+                    if (record.record_date > items[record.camis]) {
+                        db.update(record);
+                        items[record.camis] = record.record_date;
                     }
                 } else {
-                    items[res.camis] = res.date;
+                    db.insertOne(record);
+                    items[record.camis] = record.record_date;
                 }
             });
     }

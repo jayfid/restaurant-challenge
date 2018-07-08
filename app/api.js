@@ -1,6 +1,7 @@
 const express = require('express');
 const config = require('./config.js');
 
+const LISTEN_PORT = config.get('listen_port') || 8080;
 const app = express();
 
 // enable CORS
@@ -22,6 +23,7 @@ app.get('/search', (req, res) => {
     if (req.param('grade')) {
         params.grade = { $lte: parseInt(req.param('grade'), 10) };
     }
+    res.send(params);
 });
 
-app.listen(config.get('listen_port'));
+app.listen(LISTEN_PORT);

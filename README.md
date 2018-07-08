@@ -8,7 +8,7 @@ This is a simple prototype that should accomplish the following requirements
 
 ## Technology Choices
 NodeJS was chosen to get a working prototype done quickly.  NodeJS itself is performant enough to parse the number of records we have with no performance tuning.
-Using NodeJS, an ETL module, API, and webpage can all be produced with minimal setup time.  I chose to use the csv, express, and mongo npm packages to handle the plumbing of parsing, serving, and storing resources.
+Using NodeJS, an ETL module, API, and webpage can all be produced with minimal setup time.  I chose to use the csv, config, express, and mongo npm packages to handle the plumbing of parsing, configuring, serving, and storing resources.
 
 MongoDB was chosen for the backend because of the ability to easily handle the number of records we're throwing at it as well as the ability to modify schema without install scripts or database updates.
 
@@ -56,15 +56,19 @@ The overall schema is purposefully basic, storing data we need to query or displ
 }
 ```
 
+### Possible schema extensions
+Embed a list of "inspection events" in each restaurant document.  Could be helpful in charting patterns in grade changes. 
+
 ## Limitations
-During import, records are checked against their CAMIS id to spot duplicates.  This search time would increase as the number of records increase and de-duplication/disambiguation would be addressed.  
+During import, records are checked against their CAMIS id to spot duplicates.  This search time would increase as the number of records increase and de-duplication/disambiguation would be addressed in a much more distributed, failure tolerant manner. 
 
-The style of the app is as bare-bones as possible so time is spent focusing on coding.  
+The _aesthetics_ of the app are as bare-bones as possible so time is spent focusing on coding.  
 
-Geo-location could be achieved and used for lookups in the future, but this was bypassed to remove our dependencies on external APIs
+_Geo-location_ could be achieved and used for lookups in the future, but this was bypassed to remove our dependencies on external APIs
 
-Hard-coded values in frontend js
+_Hard-coded values_ in frontend js
 
 Proper validation would have been a rabbit hole in various parts of this
 
-The data set makes determining the "best" difficult
+The data set makes determining the "best" restaurants somewhat difficult
+
