@@ -1,4 +1,6 @@
+/*eslint-disable */
 'use strict';
+
 (function($) {
     $.ajax('http://localhost:8080/restaurants')
     .done(function(data) {
@@ -42,3 +44,4 @@
         $('#result-box').append(insertHTML);
     }
 })(jQuery);
+/* eslint-enable */
