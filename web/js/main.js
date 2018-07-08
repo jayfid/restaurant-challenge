@@ -6,6 +6,7 @@
     .done(function(data) {
         populateData(data);
     });
+    // error handling omitted purposefully
 
     // watch for changes to the form selects and update the page accordingly
     $('select').change(function() {

@@ -31,7 +31,10 @@ mongo.connect(DB_URL, (err, client) => {
   if (err) { throw err; }
 
   const db = client.db(DB_NAME);
-  const items = {}; // build a temporary list of items to prevent importing duplicates
+  // build a temporary list of items to prevent importing duplicates
+  // obviously, if we were dealing with a set of data
+  //
+  const items = {};
 
   fs.createReadStream(CSV_LOCATION)
     .pipe(csv())
