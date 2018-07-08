@@ -62,3 +62,9 @@ During import, records are checked against their CAMIS id to spot duplicates.  T
 The style of the app is as bare-bones as possible so time is spent focusing on coding.  
 
 Geo-location could be achieved and used for lookups in the future, but this was bypassed to remove our dependencies on external APIs
+
+Hard-coded values in frontend js
+
+Proper validation would have been a rabbit hole in various parts of this
+
+The data set makes determining the "best" difficult
