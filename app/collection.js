@@ -22,15 +22,23 @@ class Collection {
      *
      * @returns Promise
      */
-    static search(params = {}, sort_field = null, limit = 10) {
-        dbClient.find(
-            {
-                [params]: params,
-                [sort_field]: sort_field,
-                [limit]: limit,
-            },
-        );
+    static search(params = {}, sortField = null, limit = 10) {
+        return new Promise((resolve, reject) => {
+            const query = dbClient. .find(params);
+            if (sortField) {
+                query.sort({ [sortField]: 1 });
+            }
+            query.limit(limit);
+            query.toArray()
+                .then((docs) => {
+                    resolve(docs);
+                })
+                .catch((err) => {
+                    console.log(err);
+                    reject(err);
+                });
+        });
     }
 }
 
-module.exports = new Collection();
+module.exports = Collection;

@@ -11,9 +11,7 @@ const config = require('./config.js');
 
 const url = config.get('env.db.url');
 const dbName = config.get('env.db.name');
-let dbClient;
-
-MongoClient.connect(url,
+let dbClient = MongoClient.connect(url,
     { useNewUrlParser: true })
     .then((client) => {
         dbClient = client.db(dbName);
@@ -21,6 +19,9 @@ MongoClient.connect(url,
     .catch((err) => {
         if (err) { throw err; }
     });
+console.log(dbClient);
+
+
 
 /**
  * Inside of this main function, the
@@ -31,9 +32,14 @@ MongoClient.connect(url,
  * the most recent update, the record will be updated.
  */
 
+const items = {};
+
 class Etl {
     static load() {
-        const items = {}; // build a temporary list of items to prevent importing duplicates
+        Etl.readSource();
+    }
+
+    static readSource() {
         fs.createReadStream(config.get('env.source_file'))
             .pipe(csv())
             .on('data', (data) => {
@@ -51,20 +57,21 @@ class Etl {
                     grade_date: new Date(data['GRADE DATE']),
                     record_date: new Date(data['RECORD DATE']),
                 };
-                // if we've already seen a CAMIS, update it if the grade date is more recent.
-                if (record.camis in items) {
-                    if (record.record_date > items[record.camis]) {
-                        dbClient.update(record);
-                        items[record.camis] = record.record_date;
-                    }
-                } else {
-                    dbClient.insertDocuments(record);
-                    items[record.camis] = record.record_date;
-                }
-            })
-            .on('finish', () => {
-                process.exit();
+                Etl.saveOrUpdate(record);
             });
+    }
+
+    static saveOrUpdate(record) {
+        // if we've already seen a CAMIS, update it if the grade date is more recent.
+        if (record.camis in items) {
+            if (record.record_date > items[record.camis]) {
+                dbClient.collection(config.get('env.db.collection')).update({ cmais: record.camis }, record);
+                items[record.camis] = record.record_date;
+            }
+        } else {
+            // dbClient.collection(config.get('env.db.collection')).insertOne(record);
+            items[record.camis] = record.record_date;
+        }
     }
 }
 

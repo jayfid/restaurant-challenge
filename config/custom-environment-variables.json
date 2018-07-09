@@ -6,6 +6,8 @@
             "name": "DB_NAME",
             "collection": "COLLECTION_NAME"
         },
-        "server.port": "LISTEN_PORT"
+        "server": {
+            "port": "LISTEN_PORT"
+        }
     }
 }
