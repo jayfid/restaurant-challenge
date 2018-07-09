@@ -7,45 +7,16 @@
 
 const csv = require('csv-parser');
 const fs = require('fs');
-const {
-    MongoClient
-} = require('mongodb');
+const { MongoClient } = require('mongodb');
+const items = {};
+const connections = {};
 const config = require('./config.js');
 
-let dbClient;
-
-/**
- * Inside of this main function, the
- * csv will be parsed by the csv module
- * Each line will be checked against the previous inserts
- * If the record is new, it will be inserted
- * Otherwise, if the grade date (report date) is newer that
- * the most recent update, the record will be updated.
- */
-
-class Etl {
-    constructor() {
-        this.items = {};
-        this.db = new Promise((resolve, reject) => {
-            MongoClient.connect(
-                config.get('env.db.url'), {
-                    useNewUrlParser: true,
-                },
-            )
-                .then((conn) => {
-                    resolve(conn);
-                })
-                .catch((err) => {
-                    reject(err);
-                });
-        });
-    }
-
-    load() {
-        this.readSource();
-    }
-
-    readSource() {
+this.conn = MongoClient.connect(
+    config.get('env.db.url'), 
+    { useNewUrlParser: true })
+    .then((client) => {
+        connections.mongo = client.db(config.get('env.db.name'));
         fs.createReadStream(config.get('env.source_file'))
             .pipe(csv())
             .on('data', (data) => {
@@ -63,24 +34,26 @@ class Etl {
                     grade_date: new Date(data['GRADE DATE']),
                     record_date: new Date(data['RECORD DATE']),
                 };
-                this.saveOrUpdate(record);
+                // if we've already seen a CAMIS, update it if the grade date is more recent.
+                if (record.camis in this.items) {
+                    if (record.record_date > this.items[record.camis]) {
+                        connections.mongo.collection(config.get('env.db.collection').update({
+                            cmais: record.camis,
+                        }, record));
+                        this.items[record.camis] = record.record_date;
+                    }
+                } else {
+                    connections.mongo.collection(config.get('env.db.collection')).insert(record);
+                    this.items[record.camis] = record.record_date;
+                }
             });
-    }
+    });
 
-    saveOrUpdate(record) {
-        // if we've already seen a CAMIS, update it if the grade date is more recent.
-        if (record.camis in this.items) {
-            if (record.record_date > this.items[record.camis]) {
-                this.db.collection(config.get('env.db.collection').update({
-                    cmais: record.camis,
-                }, record));
-                this.items[record.camis] = record.record_date;
-            }
-        } else {
-            this.db.collection(config.get('env.db.collection')).insert(record);
-            this.items[record.camis] = record.record_date;
-        }
-    }
-}
-
-module.exports = Etl;
+/**
+ * Inside of this main function, the
+ * csv will be parsed by the csv module
+ * Each line will be checked against the previous inserts
+ * If the record is new, it will be inserted
+ * Otherwise, if the grade date (report date) is newer that
+ * the most recent update, the record will be updated.
+ */
