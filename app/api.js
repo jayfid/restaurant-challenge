@@ -6,7 +6,6 @@
 const express = require('express');
 const config = require('./config.js');
 
-const LISTEN_PORT = parseInt(config.get('listen_port'), 10) || 8080;
 const app = express();
 
 // enable CORS
@@ -36,8 +35,10 @@ app.use((req, res) => {
 
 // catch failures
 app.use((error, req, res) => {
+    /* eslint-disable no-console */
     console.error(error);
+    /* eslint-enable no-console */
     res.send('SERVER ERROR', 500);
 });
 
-app.listen(LISTEN_PORT);
+app.listen(config.get('env.server.port'));

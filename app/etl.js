@@ -6,9 +6,25 @@
 
 const csv = require('csv-parser');
 const fs = require('fs');
+const { MongoClient } = require('mongodb');
 const config = require('./config.js');
 const db = require('./db.js');
 
+function connect(url) {
+    return MongoClient.connect(url)
+        .then(client => client.db());
+}
+
+const insertDocuments = (connection, callback) => {
+    // Get the documents collection
+    const collection = client.collection(config.get('env.db.collection'));
+    // Insert some documents
+    collection.insertMany([
+        { a: 1 }, { a: 2 }, { a: 3 },
+    ], (err, result) => {
+        callback(result);
+    });
+};
 
 /**
  * Inside of this main function, the
@@ -22,13 +38,10 @@ const db = require('./db.js');
 class Etl {
     constructor() {
         this.db = db;
-        this.db.getDB();
+        console.log(db);
         /* eslint-disable no-console */
         console.log(db);
         /* eslint-enable no-console */
-
-
-        process.exit();
     }
 
     static load() {
@@ -53,11 +66,13 @@ class Etl {
                 // if we've already seen a CAMIS, update it if the grade date is more recent.
                 if (record.camis in items) {
                     if (record.record_date > items[record.camis]) {
+                        console.log(this.db);
                         this.db.update(record);
                         items[record.camis] = record.record_date;
                     }
                 } else {
-                    this.db.insertOne(record);
+                    console.log(this.db);
+                    insertDocuments(record);
                     items[record.camis] = record.record_date;
                 }
             })

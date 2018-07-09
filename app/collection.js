@@ -12,7 +12,7 @@ class Collection {
      * @returns Promise
      */
     search(params = {}, sort_field = null, limit = 10) {
-        this.db.findfind(
+        this.db.find(
             {
                 [params]: params,
                 [sort_field]: sort_field,
