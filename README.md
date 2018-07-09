@@ -21,7 +21,6 @@ Create a `.env` file in the root directory.  The following variables are require
 ```
 DB_NAME=myApp
 DB_URL=mongodb://localhost:27017
-COLLECTION_NAME=restaurants
 SERVER_PORT=8080
 SOURCE_FILE=./data/data.csv
 LISTEN_PORT=8080

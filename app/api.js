@@ -3,12 +3,20 @@
  * extras, like 404s/500s/CORS config
  */
 
-const express = require('express');
-const config = require('./config.js');
-const Collection = require('./collection');
 const bodyParser = require('body-parser');
+const express = require('express');
+const { MongoClient } = require('mongodb');
+const config = require('./config.js');
+const Collection = require('./collection.js');
 
 const app = express();
+
+let dbClient;
+
+MongoClient.connect(config.get('env.db.url'), { useNewUrlParser: true })
+    .then((client) => {
+        dbClient = client.db(config.get('env.db.name'));
+    });
 
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -25,14 +33,15 @@ app.use((req, res, next) => {
 app.get('/search', (req, res) => {
     const params = {};
     // could make this list more dynamic, but this
-    // seemed like a good apprach for now
+    // seemed like a good approach for now
     if (req.params.type) {
         params.type = req.params.type;
     }
     if (req.params.grade) {
         params.grade = { $lte: parseInt(req.param.grade, 10) };
     }
-    return res.send(Collection.search(params));
+    const collection = new Collection(req, res);
+    return res.send(collection.search(params));
 });
 
 // catch fallthrough with 404 responses

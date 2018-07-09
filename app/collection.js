@@ -1,37 +1,34 @@
-const { MongoClient } = require('mongodb');
 const config = require('./config.js');
-
-const url = config.get('env.db.url');
-const dbName = config.get('env.db.name');
-let dbClient;
-
-
-MongoClient.connect(url,
-    { useNewUrlParser: true })
-    .then((client) => {
-        dbClient = client.db(dbName);
-    })
-    .catch((err) => {
-        if (err) { throw err; }
-    });
+const client = db.connectToServer( function( err ) {
+    throw err;
+  } );
 
 class Collection {
+    constructor(req, res) {
+        this.req = req;
+        this.res = res;
+    }
+
     /**
-     * Resturn a promise
+     * Returns a promise
      *
      *
      * @returns Promise
      */
-    static search(params = {}, sortField = null, limit = 10) {
+    search(params = {}, sortField = null, limit = 10) {
+        const sort = {};
         return new Promise((resolve, reject) => {
-            const query = dbClient. .find(params);
             if (sortField) {
-                query.sort({ [sortField]: 1 });
+                sort.sortField = 1;
+            }
+            const query = dbClient.collection(config.get('env.db.connection')).find(params);
+            if (sortField) {
+                query.sort();
             }
             query.limit(limit);
             query.toArray()
                 .then((docs) => {
-                    resolve(docs);
+                    this.res.send(docs);
                 })
                 .catch((err) => {
                     console.log(err);

@@ -4,24 +4,15 @@
  * be added later by correlating camis values.
  */
 
+
 const csv = require('csv-parser');
 const fs = require('fs');
-const { MongoClient } = require('mongodb');
+const {
+    MongoClient
+} = require('mongodb');
 const config = require('./config.js');
 
-const url = config.get('env.db.url');
-const dbName = config.get('env.db.name');
-let dbClient = MongoClient.connect(url,
-    { useNewUrlParser: true })
-    .then((client) => {
-        dbClient = client.db(dbName);
-    })
-    .catch((err) => {
-        if (err) { throw err; }
-    });
-console.log(dbClient);
-
-
+let dbClient;
 
 /**
  * Inside of this main function, the
@@ -32,14 +23,29 @@ console.log(dbClient);
  * the most recent update, the record will be updated.
  */
 
-const items = {};
-
 class Etl {
-    static load() {
-        Etl.readSource();
+    constructor() {
+        this.items = {};
+        this.db = new Promise((resolve, reject) => {
+            MongoClient.connect(
+                config.get('env.db.url'), {
+                    useNewUrlParser: true,
+                },
+            )
+                .then((conn) => {
+                    resolve(conn);
+                })
+                .catch((err) => {
+                    reject(err);
+                });
+        });
     }
 
-    static readSource() {
+    load() {
+        this.readSource();
+    }
+
+    readSource() {
         fs.createReadStream(config.get('env.source_file'))
             .pipe(csv())
             .on('data', (data) => {
@@ -57,20 +63,22 @@ class Etl {
                     grade_date: new Date(data['GRADE DATE']),
                     record_date: new Date(data['RECORD DATE']),
                 };
-                Etl.saveOrUpdate(record);
+                this.saveOrUpdate(record);
             });
     }
 
-    static saveOrUpdate(record) {
+    saveOrUpdate(record) {
         // if we've already seen a CAMIS, update it if the grade date is more recent.
-        if (record.camis in items) {
-            if (record.record_date > items[record.camis]) {
-                dbClient.collection(config.get('env.db.collection')).update({ cmais: record.camis }, record);
-                items[record.camis] = record.record_date;
+        if (record.camis in this.items) {
+            if (record.record_date > this.items[record.camis]) {
+                this.db.collection(config.get('env.db.collection').update({
+                    cmais: record.camis,
+                }, record));
+                this.items[record.camis] = record.record_date;
             }
         } else {
-            // dbClient.collection(config.get('env.db.collection')).insertOne(record);
-            items[record.camis] = record.record_date;
+            this.db.collection(config.get('env.db.collection')).insert(record);
+            this.items[record.camis] = record.record_date;
         }
     }
 }
