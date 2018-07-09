@@ -2,41 +2,54 @@ const { MongoClient } = require('mongodb');
 const config = require('./config.js');
 
 class DB {
-    constructor() {
-        MongoClient.connect(config.get('db.url'), { useNewUrlParser: true })
-            .then((err, connection) => {
-                if (err) { throw err; }
-                this.db = connection.db(config.get('db_name'));
-            });
+    getDB() {
+        return new Promise((resolve, reject) => {
+            if (this.db) {
+                return this.db;
+            }
+            MongoClient.connect(
+                config.get('env.db.url'),
+                { useNewUrlParser: true },
+                (err, conn) => {
+                    if (err) { reject(err); }
+                    const db = conn.db(conn.db.name);
+                    this.db = db;
+                    resolve(db);
+                },
+            );
+        },
+        );
     }
 
     insertOne(document) {
-        return new Promise((resolve, reject) => {
-            this.db.collection(config.get('db.collection')).insertOne(document)
-                .then((err) => { if (err) { reject(err); } });
-        });
+        this.getDB.insert(document);
     }
 
     update(document) {
-        return new Promise((resolve, reject) => {
-            this.db.collection(config.get('db_collection')).update({
-                id: document.camis,
-            }, document)
-                .then((err) => { if (err) { reject(err); } });
-        });
+        const callback = (document) => {
+            this.db.collection(
+                config.get('env.db.collection')
+            )
+                .update({
+                    camis: document.camis,
+                }, document);
+        };
     }
 
-    find(params, sort = { camis: 1 }, limit = 10) {
+    find(params, sort = null, limit = 10) {
         return new Promise((resolve, reject) => {
-            this.query = this.db.collection(config.get('db_collection')).find(params);
+            this.query = this.conn.collection(config.get('env.db.collection')).find(params);
             if (sort) {
-                this.query.sort(sort);
+                const sortObj = {};
+                sortObj[sort] = 1;
+                this.query.sort(sortObj);
             }
             if (limit) {
                 this.query.limit(limit);
             }
             this.query.toArray()
-                .then((docs) => { resolve(docs); });
+                .then((docs) => { resolve(docs); })
+                .catch((e) => { reject(e); });
         });
     }
 }

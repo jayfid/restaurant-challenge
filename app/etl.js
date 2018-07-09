@@ -6,8 +6,9 @@
 
 const csv = require('csv-parser');
 const fs = require('fs');
-const db = require('./db.js');
 const config = require('./config.js');
+const db = require('./db.js');
+
 
 /**
  * Inside of this main function, the
@@ -18,14 +19,21 @@ const config = require('./config.js');
  * the most recent update, the record will be updated.
  */
 
-class CSVLoader {
+class Etl {
     constructor() {
         this.db = db;
+        this.db.getDB();
+        /* eslint-disable no-console */
+        console.log(db);
+        /* eslint-enable no-console */
+
+
+        process.exit();
     }
 
     static load() {
         const items = {}; // build a temporary list of items to prevent importing duplicates
-        fs.createReadStream(config.get('csv_location'))
+        fs.createReadStream(config.get('env.source_file'))
             .pipe(csv())
             .on('data', (data) => {
                 // as we stream data in, each row is a candidate for insert
@@ -38,22 +46,25 @@ class CSVLoader {
                     phone: data.PHONE,
                     score: data.score,
                     type: data['CUISINE DESCRIPTION'].toLowerCase(),
-                    grade: data.GRADE ? config.get('grade')[data.GRADE] : 20,
+                    grade: data.GRADE ? config.get('grades')[data.GRADE] : 20,
                     grade_date: new Date(data['GRADE DATE']),
                     record_date: new Date(data['RECORD DATE']),
                 };
                 // if we've already seen a CAMIS, update it if the grade date is more recent.
                 if (record.camis in items) {
                     if (record.record_date > items[record.camis]) {
-                        db.update(record);
+                        this.db.update(record);
                         items[record.camis] = record.record_date;
                     }
                 } else {
-                    db.insertOne(record);
+                    this.db.insertOne(record);
                     items[record.camis] = record.record_date;
                 }
+            })
+            .on('finish', () => {
+                process.exit();
             });
     }
 }
 
-module.exports = new CSVLoader();
+module.exports = Etl;

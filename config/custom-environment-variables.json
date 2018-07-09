@@ -1,20 +1,11 @@
 {
-  "source_file": "CSV_LOCATION",
-  "db": {
-    "url": "DB_URL",
-    "name": "DB_NAME",
-    "collection": "COLLECTION_NAME"
-  },
-  "grades": {
-    "map": {
-      "A": 1,
-      "B": 2,
-      "C": 3,
-      "Z": 10,
-      "P": 15,
-      "Not Yet Graded": 20
-    },
-    "default": null
-  },
-  "server.port": "LISTEN_PORT"
+    "env": {
+        "source_file": "SOURCE_FILE",
+        "db": {
+            "url": "DB_URL",
+            "name": "DB_NAME",
+            "collection": "COLLECTION_NAME"
+        },
+        "server.port": "LISTEN_PORT"
+    }
 }
