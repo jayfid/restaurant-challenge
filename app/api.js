@@ -35,9 +35,6 @@ app.use((req, res) => {
 
 // catch failures
 app.use((error, req, res) => {
-    /* eslint-disable no-console */
-    console.error(error);
-    /* eslint-enable no-console */
     res.send('SERVER ERROR', 500);
 });
 

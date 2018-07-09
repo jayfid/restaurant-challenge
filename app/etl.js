@@ -8,23 +8,19 @@ const csv = require('csv-parser');
 const fs = require('fs');
 const { MongoClient } = require('mongodb');
 const config = require('./config.js');
-const db = require('./db.js');
 
-function connect(url) {
-    return MongoClient.connect(url)
-        .then(client => client.db());
-}
+const url = config.get('env.db.url');
+const dbName = config.get('env.db.name');
+let dbClient;
 
-const insertDocuments = (connection, callback) => {
-    // Get the documents collection
-    const collection = client.collection(config.get('env.db.collection'));
-    // Insert some documents
-    collection.insertMany([
-        { a: 1 }, { a: 2 }, { a: 3 },
-    ], (err, result) => {
-        callback(result);
+MongoClient.connect(url,
+    { useNewUrlParser: true })
+    .then((client) => {
+        dbClient = client.db(dbName);
+    })
+    .catch((err) => {
+        if (err) { throw err; }
     });
-};
 
 /**
  * Inside of this main function, the
@@ -36,14 +32,6 @@ const insertDocuments = (connection, callback) => {
  */
 
 class Etl {
-    constructor() {
-        this.db = db;
-        console.log(db);
-        /* eslint-disable no-console */
-        console.log(db);
-        /* eslint-enable no-console */
-    }
-
     static load() {
         const items = {}; // build a temporary list of items to prevent importing duplicates
         fs.createReadStream(config.get('env.source_file'))
@@ -66,13 +54,11 @@ class Etl {
                 // if we've already seen a CAMIS, update it if the grade date is more recent.
                 if (record.camis in items) {
                     if (record.record_date > items[record.camis]) {
-                        console.log(this.db);
-                        this.db.update(record);
+                        dbClient.update(record);
                         items[record.camis] = record.record_date;
                     }
                 } else {
-                    console.log(this.db);
-                    insertDocuments(record);
+                    dbClient.insertDocuments(record);
                     items[record.camis] = record.record_date;
                 }
             })

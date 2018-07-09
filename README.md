@@ -73,3 +73,5 @@ Proper validation would have been a rabbit hole in various parts of this
 
 The data set makes determining the "best" restaurants somewhat difficult
 
+Verbose error messages.  Given more time, it would have made sense improve the fail states of the app.
+
