@@ -17,8 +17,7 @@ class Collection {
     /**
      */
     search(params = {}, sortField = null, limit = 10) {
-        // const items = Promise.resolve(this.getItemList(params, sortField, limit));
-        // console.log(items);
+
     }
 }
 

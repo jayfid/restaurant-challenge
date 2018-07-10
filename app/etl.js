@@ -16,7 +16,7 @@ const connections = {};
 this.conn = MongoClient.connect(
     config.get('env.db.url'),
     { useNewUrlParser: true },
-).then((client) => {
+).then((client) => {getItemList
     connections.mongo = client;
     connections.mongo.db(config.get('env.db.name'));
     /**
