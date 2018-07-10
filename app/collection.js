@@ -1,23 +1,34 @@
 const { MongoClient } = require('mongodb');
-const config = require('./config.js');
-
-const connections = {};
-this.conn = MongoClient.connect(
-    config.get('env.db.url'),
-    { useNewUrlParser: true },
-).then((client) => {
-    connections.mongo = client;
-});
+const config = require('./config');
 
 class Collection {
-    constructor(req, res) {
-        this.req = req;
-        this.res = res;
+    async search(params, sortField = null, limit = 10) {
+        return this.query(params, sortField, limit);
     }
-    /**
-     */
-    search(params = {}, sortField = null, limit = 10) {
 
+    query(params, sortField, limit) {
+        return new Promise((resolve, reject) => {
+            MongoClient.connect(
+                config.get('env.db.url'),
+                { useNewUrlParser: true },
+                (err, db) => {
+                    const collection = db
+                        .db(config.get('env.db.name'))
+                        .collection(config.get('env.db.collection'));
+                    const search = collection.find(params);
+                    if (sortField) {
+                        search.sort({ [sortField]: 1 });
+                    }
+                    if (limit) {
+                        search.limit(limit);
+                    }
+                    search.toArray((error, docs) => {
+                        if (error) { reject(err); }
+                        resolve(docs);
+                    });
+                },
+            );
+        });
     }
 }
 
