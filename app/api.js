@@ -1,6 +1,8 @@
 /**
  * A basic server to handle restaurant searches as well as some
  * extras, like 404s/500s/CORS config
+ * Rather than a more traditional RESTful API,
+ * I decided to make one search endpoint.
  */
 
 const bodyParser = require('body-parser');
@@ -10,20 +12,11 @@ const config = require('./config.js');
 const Collection = require('./collection.js');
 
 const app = express();
-
-MongoClient.connect(config.get('env.db.url'), { useNewUrlParser: true })
-    .then((client) => {
-        let dbClient = client.db(config.get('env.db.name'));
-        dbClient.collection(config.get('env.db.collection'));
-    })
-    .catch((err) => {
-        throw err;
-    });
-
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false }));
 // parse application/json
 app.use(bodyParser.json());
+
 app.get('/search', (req, res) => {
     const params = {};
     // could make this list more dynamic, but this
@@ -44,10 +37,10 @@ app.use((req, res) => {
 });
 
 // catch failures
-app.use((error, req, res) => {
+app.use((err, req, res) => {
+    console.log(err);
     res.status(500).send('SERVER ERROR', 500);
 });
-app.listen(config.get('env.server.port'));
 
 // enable CORS
 app.use((req, res, next) => {
@@ -55,3 +48,5 @@ app.use((req, res, next) => {
     res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
     next();
 });
+
+app.listen(config.get('env.server.port'));
