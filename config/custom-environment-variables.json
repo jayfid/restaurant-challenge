@@ -4,7 +4,7 @@
         "db": {
             "url": "DB_URL",
             "name": "DB_NAME",
-            "collection": "DB_COLLECTION"
+            "collection": "COLLECTION_NAME"
         },
         "server": {
             "port": "LISTEN_PORT"

@@ -1,7 +1,12 @@
+const { MongoClient } = require('mongodb');
 const config = require('./config.js');
-const client = db.connectToServer( function( err ) {
-    throw err;
-  } );
+const mongo = require('./mongo.js');
+
+this.conn = MongoClient.connect(
+    config.get('env.db.url'),
+    { useNewUrlParser: true },
+).then((client) => {
+    connections.mongo = client
 
 class Collection {
     constructor(req, res) {
@@ -21,7 +26,7 @@ class Collection {
             if (sortField) {
                 sort.sortField = 1;
             }
-            const query = dbClient.collection(config.get('env.db.connection')).find(params);
+            const query = collection.mongo.collection(config.get('env.db.connection')).find(params);
             if (sortField) {
                 query.sort();
             }
@@ -31,7 +36,6 @@ class Collection {
                     this.res.send(docs);
                 })
                 .catch((err) => {
-                    console.log(err);
                     reject(err);
                 });
         });
