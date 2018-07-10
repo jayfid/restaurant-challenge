@@ -20,7 +20,7 @@
         });
         $.ajax({
             type: 'POST',
-            url: 'http://localhost:8080/restaurants',
+            url: 'http://localhost:8080/search',
             data: request
         })
         .done(function(data) {
