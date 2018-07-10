@@ -13,12 +13,12 @@ const config = require('./config.js');
 const items = {};
 const connections = {};
 
-
-connections.mongo.db(config.get('env.db.name'));this.conn = MongoClient.connect(
+this.conn = MongoClient.connect(
     config.get('env.db.url'),
     { useNewUrlParser: true },
 ).then((client) => {
     connections.mongo = client;
+    connections.mongo.db(config.get('env.db.name'));
     /**
      * Inside of this main function, the
      * csv will be parsed by the csv module

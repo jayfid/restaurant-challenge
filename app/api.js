@@ -11,25 +11,19 @@ const Collection = require('./collection.js');
 
 const app = express();
 
-let dbClient;
-
 MongoClient.connect(config.get('env.db.url'), { useNewUrlParser: true })
     .then((client) => {
-        dbClient = client.db(config.get('env.db.name'));
+        let dbClient = client.db(config.get('env.db.name'));
+        dbClient.collection(config.get('env.db.collection'));
+    })
+    .catch((err) => {
+        throw err;
     });
 
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false }));
 // parse application/json
 app.use(bodyParser.json());
-
-// enable CORS
-app.use((req, res, next) => {
-    res.header('Access-Control-Allow-Origin', '*');
-    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
-    next();
-});
-
 app.get('/search', (req, res) => {
     const params = {};
     // could make this list more dynamic, but this
@@ -54,3 +48,10 @@ app.use((error, req, res) => {
     res.status(500).send('SERVER ERROR', 500);
 });
 app.listen(config.get('env.server.port'));
+
+// enable CORS
+app.use((req, res, next) => {
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+    next();
+});
