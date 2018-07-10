@@ -1,4 +1,4 @@
-# APP NAME
+# NYC Restaurant Challenge
 
 ## Overview
 This is a simple prototype that should accomplish the following requirements
