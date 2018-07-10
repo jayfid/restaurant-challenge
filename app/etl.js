@@ -16,9 +16,8 @@ const connections = {};
 this.conn = MongoClient.connect(
     config.get('env.db.url'),
     { useNewUrlParser: true },
-).then((client) => {getItemList
-    connections.mongo = client;
-    connections.mongo.db(config.get('env.db.name'));
+).then((client) => {
+    client.db(config.get('env.db.name'));
     /**
      * Inside of this main function, the
      * csv will be parsed by the csv module
@@ -47,13 +46,13 @@ this.conn = MongoClient.connect(
             // if we've already seen a CAMIS, update it if the grade date is more recent.
             if (record.camis in items) {
                 if (record.record_date > items[record.camis]) {
-                    connections.mongo.collection(config.get('env.db.collection')).update({
+                    client.db(config.get('env.db.name')).collection(config.get('env.db.collection')).update({
                         cmais: record.camis,
                     }, record);
                     items[record.camis] = record.record_date;
                 }
             } else {
-                connections.mongo.collection(config.get('env.db.collection')).insert(record);
+                client.db(config.get('env.db.name')).collection(config.get('env.db.collection')).insert(record);
                 items[record.camis] = record.record_date;
             }
         });
