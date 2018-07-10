@@ -2,7 +2,8 @@
 'use strict';
 
 (function($) {
-    $.ajax('http://localhost:8080/restaurants')
+    var endpoint = 'http://localhost:8080/search';
+    $.ajax(endpoint)
     .done(function(data) {
         populateData(data);
     });
@@ -12,21 +13,20 @@
     $('select').change(function() {
         var str = "";
         var request = {};
+        var append_params = [];
         $("select").each(function() {
+            
             if ($(this).val()) {
-                var name = $(this).attr('id');
-                request[name] = $(this).val();
+                append_params.push($(this).attr('id') + '=' + encodeURIComponent($(this).val()));
             }
         });
-        $.ajax({
-            type: 'POST',
-            url: 'http://localhost:8080/search',
-            data: request
-        })
+        var search_url = endpoint + '?' + append_params.join('&');
+        $.ajax(search_url)
         .done(function(data) {
             $('#result-box').empty();
             populateData(data);
         });
+        // could handle errors, but would take more time.
     });
 
     function populateData(data) {
@@ -37,10 +37,23 @@
     }
 
     function addListingToPage(data) {
+        var grades = {
+                1 : 'A',
+                2: 'B',
+                3: 'c',
+                10: 'Z',
+                15: 'P',
+                20: "Not Yet Graded"
+        };
+        var grade = grades.hasOwnProperty(data.grade) ? grades[data.grade] : 'N/A';
         var insertNode = '<div class="text-center bpush-40 bordered tpad-10 rpad-10 lpad-10 bpad-20">'
             + '<p class="bold">' + data.name + '</p><p>'
-            + data.address
-            + '</p></div>';
+            + '<p class="tpad-20 bpad-20 uppercase">' + data.type + '</p>'
+            + '<p class="bpush-20">' + data.address + '<br />' + data.boro + " " + ", NY " + data.postal_code + '</p>'
+            + '<p>Phone: ' + data.phone + '</p>'
+            + '<p>Grade: ' + grade + '</p>'
+            + '</div>';
+
         var insertHTML = $.parseHTML(insertNode);
         $('#result-box').append(insertHTML);
     }

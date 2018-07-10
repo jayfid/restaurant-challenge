@@ -16,7 +16,7 @@ class Collection {
                         .db(config.get('env.db.name'))
                         .collection(config.get('env.db.collection'));
                     
-                    const search = collection.find(this.params);
+                    const search = collection.find(params);
                     if (sortField) {
                         search.sort({ [sortField]: 1 });
                     }

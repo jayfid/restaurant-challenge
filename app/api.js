@@ -9,6 +9,14 @@ const config = require('./config.js');
 const Collection = require('./collection.js');
 
 const app = express();
+
+// enable CORS
+app.use((req, res, next) => {
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+    next();
+});
+
 app.use(bodyParser.urlencoded({ extended: false }));
 // parse application/json
 app.use(bodyParser.json());
@@ -17,12 +25,12 @@ app.get('/search', async (req, res) => {
     const params = {};
     // could make this list more dynamic, but this
     // seemed like a good approach for now
-    // if (req.params.type) {
-    //     params.type = req.params.type;
-    // }
-    // if (req.params.grade) {
-    //     params.grade = { $lte: parseInt(req.param.grade, 10) };
-    // }
+    if (req.query.type) {
+        params.type = req.query.type;
+    }
+    if (req.query.grade) {
+        params.grade = { $lte: parseInt(req.query.grade, 10) };
+    }
     const collection = new Collection(req, res);
     const docs = await collection.search(params, 'camis', 10);
     res.send(docs);
@@ -41,9 +49,4 @@ app.use((error, req, res) => {
 
 app.listen(config.get('env.server.port'));
 
-// enable CORS
-app.use((req, res, next) => {
-    res.header('Access-Control-Allow-Origin', '*');
-    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
-    next();
-});
+
