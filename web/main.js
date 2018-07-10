@@ -39,8 +39,8 @@
     function addListingToPage(data) {
         var grades = {
                 1 : 'A',
-                2: 'B',
-                3: 'c',
+                2:  'B',
+                3:  'c',
                 10: 'Z',
                 15: 'P',
                 20: "Not Yet Graded"

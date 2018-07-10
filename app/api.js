@@ -48,5 +48,3 @@ app.use((error, req, res) => {
 });
 
 app.listen(config.get('env.server.port'));
-
-
