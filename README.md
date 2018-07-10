@@ -18,9 +18,9 @@ I used jQuery to simplify frontend ajax activity.  I chose to use my person css 
 The API consists of a single GET endpoint at `/restaurants`.  The get params _type_ and _grade_ are available to  limit the search.
 
 ## Installation
-This app requires access to a mongodb instance.  See (their website)[https://www.mongodb.com/] for installation instructions.
+This app requires access to a mongodb instance.  See [their website](https://www.mongodb.com/) for installation instructions.
 
-To download the data used for this exercise, use can run `./getDataFile.sh` from the root directly, or follow (this link)[https://data.cityofnewyork.us/api/views/43nn-pn8j/rows.csv?accessType=DOWNLOAD].  When creating the env vars, set the SOURCE_FILE to the location of that file.
+To download the data used for this exercise, use can run `./getDataFile.sh` from the root directly, or follow [this link](https://data.cityofnewyork.us/api/views/43nn-pn8j/rows.csv?accessType=DOWNLOAD).  When creating the env vars, set the SOURCE_FILE to the location of that file.
 
 Create a `.env` file in the root directory.  The following variables are required
 ```
