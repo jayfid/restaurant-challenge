@@ -6,6 +6,10 @@ class Collection {
         return this.query(params, sortField, limit);
     }
 
+    /**
+     * Return a promise of a mongodb find.
+     *
+     */
     query(params, sortField, limit) {
         return new Promise((resolve, reject) => {
             MongoClient.connect(

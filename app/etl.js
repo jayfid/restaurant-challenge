@@ -4,7 +4,6 @@
  * be added later by correlating camis values.
  */
 
-
 const csv = require('csv-parser');
 const fs = require('fs');
 const { MongoClient } = require('mongodb');

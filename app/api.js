@@ -5,7 +5,6 @@
  * I decided to make one search endpoint.
  */
 
-const bodyParser = require('body-parser');
 const express = require('express');
 const config = require('./config.js');
 const Collection = require('./collection.js');
@@ -18,11 +17,6 @@ app.use((req, res, next) => {
     res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
     next();
 });
-
-// parse application/x-www-form-urlencoded
-app.use(bodyParser.urlencoded({ extended: false }));
-// parse application/json
-app.use(bodyParser.json());
 
 app.get('/search', async (req, res) => {
     const params = {};
