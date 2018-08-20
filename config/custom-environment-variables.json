@@ -1,0 +1,13 @@
+{
+    "env": {
+        "source_file": "SOURCE_FILE",
+        "db": {
+            "url": "DB_URL",
+            "name": "DB_NAME",
+            "collection": "COLLECTION_NAME"
+        },
+        "server": {
+            "port": "LISTEN_PORT"
+        }
+    }
+}

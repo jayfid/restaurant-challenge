@@ -4,8 +4,9 @@
   "description": "A code challenge for The Orchard",
   "main": "index.js",
   "scripts": {
-    "load": "node etl/loader.js",
-    "start": "node server/index.js"
+    "load": "./node_modules/.bin/nodemon app/etl.js",
+    "api": "./node_modules/.bin/nodemon app/api.js",
+    "web": "./node_modules/http-server/bin/http-server web -p8000"
   },
   "author": "Jay Fidlow",
   "license": "ISC",
@@ -16,7 +17,7 @@
     "http-server": "^0.11.1"
   },
   "dependencies": {
-    "body-parser": "^1.18.3",
+    "config": "^1.30.0",
     "csv-parser": "^1.12.1",
     "dotenv": "^6.0.0",
     "express": "^4.16.3",

@@ -7,7 +7,7 @@
     <title>RESTAURANTS</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet" href="https://yarn.pm/normalize.css">
-    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="main.css">
 </head>
 
 <body class="frame">
@@ -19,9 +19,9 @@
     <div class="container">
         <h1 class="bpush-10 tpush-20">NYC Restaurants</h1>
         <form class="bpush-40">
-            <div>
+            <div class="input-group bpush-20 rpush-20">
                 <label for="type">Cuisine Type</label>
-                <select id="type" name="type">
+                <select class="input font-size-d tpad-10 bpad-10" id="type" name="type">
                     <option value="">Select... </option>
                     <option value="sandwiches">Sandwiches</option>
                     <option value="mexican">Mexican</option>
@@ -31,9 +31,9 @@
                     <option value="mediterranean">Mediterranean</option>
                 </select>
             </div>
-            <div>
+            <div class="input-group bpush-20">
                 <label for="grade">Minimum Grade</label>
-                <select id="grade" name="grade">
+                <select class="input font-size-d tpad-10 bpad-10" id="grade" name="grade">
                     <option value="">Select... </option>
                     <option value="1">A</option>
                     <option value="2">B</option>
@@ -41,14 +41,14 @@
                 </select>
             </div>
         </form>
-        <h2>Results:</h2>
+        <h2 class="text-center">Results</h2>
         <div id="result-box"></div>
     </div>
     <script
         src="https://code.jquery.com/jquery-3.3.1.min.js"
         integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
         crossorigin="anonymous"></script>
-    <script src="js/main.js"></script>
+    <script src="main.js"></script>
 </body>
 
 </html>
